@@ -23,6 +23,11 @@ class ViewController: UIViewController {
     var questionManager = QuestionManager()
     var questions: Questions = Questions(question: "", questionOptions: [""], answer: "")
     
+    var timer = Timer()
+    var timeDuration = 15
+    var indexProgressBar = 0
+    
+    
     
     @IBOutlet weak var questionField: UILabel!
     @IBOutlet weak var answerField: UILabel!
@@ -31,6 +36,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var option3: UIButton!
     @IBOutlet weak var option4: UIButton!
     @IBOutlet weak var playAgainButton: UIButton!
+    @IBOutlet weak var timerProgressBar: UIProgressView!
     
     
 
@@ -40,7 +46,9 @@ class ViewController: UIViewController {
         // Start game
         playGameStartSound()
         displayQuestion()
-//        displayAnswers()
+        // Set timer
+        timerProgressBar.progress = 0.0
+        startTimer()
     }
 
     override func didReceiveMemoryWarning() {
@@ -49,12 +57,15 @@ class ViewController: UIViewController {
     }
     
     func displayQuestion() {
+        indexProgressBar = 0
         questions = questionManager.uniqueRandomQuestion() //store random question in variable
-
+        
         questionField.text = questions.question
         questionField.textColor = UIColor.white
         answerField.isHidden = true
         playAgainButton.isHidden = true
+        
+        // Assign question options to buttons
         option1.setTitle(questions.questionOptions[0], for: .normal)
         option2.setTitle(questions.questionOptions[1], for: .normal)
         option3.setTitle(questions.questionOptions[2], for: .normal)
@@ -80,69 +91,30 @@ class ViewController: UIViewController {
         // Increment the questions asked counter
         questionsAsked += 1
         
-
+        // Establish answer and check what option is pressed
         let correctAnswer = questions.answer
-        let buttonToCheck = sender
         
-        switch buttonToCheck {
-        case option1:
-            if sender === option1 && option1.titleLabel?.text == correctAnswer {
+            if sender === option1 && option1.titleLabel?.text == correctAnswer || sender === option2 && option2.titleLabel?.text == correctAnswer || sender === option3 && option3.titleLabel?.text == correctAnswer || sender === option4 && option4.titleLabel?.text == correctAnswer
+            {
                 correctQuestions += 1
-                
                 questionField.text = "That's Correct!"
                 questionField.textColor = UIColor.green
-            } else {
-                answerField.isHidden = false
-                questionField.text = "Sorry, that's wrong!"
-                questionField.textColor = UIColor.orange
-                answerField.font = UIFont(name: "Thonburi", size: 15)
-                answerField.text = "It's \(correctAnswer)!"
-                answerField.textColor = UIColor.orange
                 
             }
-        case option2:
-            if sender === option2 && option2.titleLabel?.text == correctAnswer {
-                correctQuestions += 1
-                questionField.text = "That's Correct!"
-                questionField.textColor = UIColor.green
-            } else {
+            else
+            {
                 answerField.isHidden = false
                 questionField.text = "Sorry, that's wrong!"
                 questionField.textColor = UIColor.orange
                 answerField.font = UIFont(name: "Thonburi", size: 15)
                 answerField.text = "It's \(correctAnswer)!"
                 answerField.textColor = UIColor.orange
+                
             }
-        case option3:
-            if sender === option3 && option3.titleLabel?.text == correctAnswer {
-                correctQuestions += 1
-                questionField.text = "That's Correct!"
-                questionField.textColor = UIColor.green
-            } else {
-                answerField.isHidden = false
-                questionField.text = "Sorry, that's wrong!"
-                questionField.textColor = UIColor.orange
-                answerField.font = UIFont(name: "Thonburi", size: 15)
-                answerField.text = "It's \(correctAnswer)!"
-                answerField.textColor = UIColor.orange
-            }
-        case option4:
-            if sender === option4 && option4.titleLabel?.text == correctAnswer {
-                correctQuestions += 1
-                questionField.text = "That's Correct!"
-                questionField.textColor = UIColor.green
-            } else {
-                answerField.isHidden = false
-                questionField.text = "Sorry, that's wrong!"
-                questionField.textColor = UIColor.orange
-                answerField.font = UIFont(name: "Thonburi", size: 15)
-                answerField.text = "It's \(correctAnswer)!"
-                answerField.textColor = UIColor.orange
-            }
-        default: break
-            
-        }
+        // End timer
+        timer.invalidate()
         
+        // Load next question
         loadNextRoundWithDelay(seconds: 2)
         
     }
@@ -182,7 +154,9 @@ class ViewController: UIViewController {
         // Executes the nextRound method at the dispatch time on the main queue
         DispatchQueue.main.asyncAfter(deadline: dispatchTime) {
             self.nextRound()
+            
         }
+        
     }
     
     func loadGameStartSound() {
@@ -194,5 +168,46 @@ class ViewController: UIViewController {
     func playGameStartSound() {
         AudioServicesPlaySystemSound(gameSound)
     }
+    
+    // MARK: Timer Methods
+    
+    func startTimer() {
+        
+            var timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(setProgressBar), userInfo: nil, repeats: true)
+        
+    }
+    
+    func setProgressBar() {
+        if indexProgressBar < timeDuration {
+            indexProgressBar += 1
+            timerProgressBar.progress = Float(indexProgressBar) / Float(timeDuration)
+            
+        } else if indexProgressBar == timeDuration {
+            answerField.isHidden = true
+            questionField.text = "Sorry, out of time!"
+            questionField.textColor = UIColor.orange
+            answerField.font = UIFont(name: "Thonburi", size: 15)
+            answerField.textColor = UIColor.orange
+            questionsAsked += 1
+            timer.invalidate()
+            loadNextRoundWithDelay(seconds: 2)
+            indexProgressBar = 0
+            
+        }
+        
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
