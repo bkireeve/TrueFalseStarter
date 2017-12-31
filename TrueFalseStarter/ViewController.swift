@@ -12,25 +12,29 @@ import AudioToolbox
 
 class ViewController: UIViewController {
     
-    let questionsPerRound = 3
+    // Quiz options
+    let questionsPerRound = 10
     var questionsAsked = 0
     var correctQuestions = 0
     var indexOfSelectedQuestion: Int = 0
    
-    
+    // Sounds
     var gameSound: SystemSoundID = 0
     var correctSound: SystemSoundID = 1
     var incorrectSound: SystemSoundID = 2
     
+    // Questions and answers
     var questionManager = QuestionManager()
     var questions: Questions = Questions(question: "", questionOptions: [""], answer: "")
     
+    // Timer
     var timer = Timer()
     var timeDuration = 15
     var indexProgressBar = 0
     
     
     
+    // Outlets
     @IBOutlet weak var questionField: UILabel!
     @IBOutlet weak var answerField: UILabel!
     @IBOutlet weak var option1: UIButton!
@@ -39,9 +43,12 @@ class ViewController: UIViewController {
     @IBOutlet weak var option4: UIButton!
     @IBOutlet weak var playAgainButton: UIButton!
     @IBOutlet weak var timerProgressBar: UIProgressView!
+    // Top Constraint outlets for option buttons
+    
+    @IBOutlet var constraintTopOption4: NSLayoutConstraint!
+    @IBOutlet var constraintHeightOption4: NSLayoutConstraint!
     
     
-
     override func viewDidLoad() {
         super.viewDidLoad()
         loadGameStartSound()
@@ -50,6 +57,8 @@ class ViewController: UIViewController {
         // Start game
         playGameStartSound()
         displayQuestion()
+        
+        
         // Set timer
         timerProgressBar.progress = 0.0
         startTimer()
@@ -79,12 +88,16 @@ class ViewController: UIViewController {
             option3.setTitle(questions.questionOptions[2], for: .normal)
             option4.setTitle(questions.questionOptions[3], for: .normal)
             option4.isHidden = false
+            constraintTopOption4.constant = 20
+            constraintHeightOption4.constant = 50
         }
         else if answerArray == 3 {
             option1.setTitle(questions.questionOptions[0], for: .normal)
             option2.setTitle(questions.questionOptions[1], for: .normal)
             option3.setTitle(questions.questionOptions[2], for: .normal)
             option4.isHidden = true
+            constraintTopOption4.constant = 0
+            constraintHeightOption4.constant = 0
         }
     }
     
@@ -269,7 +282,18 @@ class ViewController: UIViewController {
         }
         
     }
+    
+    
+    
+    
 }
+
+
+
+
+
+
+
 
 
 
