@@ -12,13 +12,15 @@ import AudioToolbox
 
 class ViewController: UIViewController {
     
-    let questionsPerRound = 4
+    let questionsPerRound = 3
     var questionsAsked = 0
     var correctQuestions = 0
     var indexOfSelectedQuestion: Int = 0
    
     
     var gameSound: SystemSoundID = 0
+    var correctSound: SystemSoundID = 1
+    var incorrectSound: SystemSoundID = 2
     
     var questionManager = QuestionManager()
     var questions: Questions = Questions(question: "", questionOptions: [""], answer: "")
@@ -43,12 +45,15 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         loadGameStartSound()
+        loadCorrectResponseSound()
+        loadWrongResponseSound()
         // Start game
         playGameStartSound()
         displayQuestion()
         // Set timer
         timerProgressBar.progress = 0.0
         startTimer()
+        
     }
 
     override func didReceiveMemoryWarning() {
@@ -66,14 +71,28 @@ class ViewController: UIViewController {
         playAgainButton.isHidden = true
         
         // Assign question options to buttons
-        option1.setTitle(questions.questionOptions[0], for: .normal)
-        option2.setTitle(questions.questionOptions[1], for: .normal)
-        option3.setTitle(questions.questionOptions[2], for: .normal)
-        option4.setTitle(questions.questionOptions[3], for: .normal)
+        let answerArray = questions.questionOptions.count
+        
+        if answerArray == 4 {
+            option1.setTitle(questions.questionOptions[0], for: .normal)
+            option2.setTitle(questions.questionOptions[1], for: .normal)
+            option3.setTitle(questions.questionOptions[2], for: .normal)
+            option4.setTitle(questions.questionOptions[3], for: .normal)
+            option4.isHidden = false
+        }
+        else if answerArray == 3 {
+            option1.setTitle(questions.questionOptions[0], for: .normal)
+            option2.setTitle(questions.questionOptions[1], for: .normal)
+            option3.setTitle(questions.questionOptions[2], for: .normal)
+            option4.isHidden = true
+        }
     }
     
 
     func displayScore() {
+        timer.invalidate()
+        
+        
         // Hide the answer buttons
         option1.isHidden = true
         option2.isHidden = true
@@ -93,12 +112,16 @@ class ViewController: UIViewController {
         
         // Establish answer and check what option is pressed
         let correctAnswer = questions.answer
+        let answerArray = questions.questionOptions.count
         
-            if sender === option1 && option1.titleLabel?.text == correctAnswer || sender === option2 && option2.titleLabel?.text == correctAnswer || sender === option3 && option3.titleLabel?.text == correctAnswer || sender === option4 && option4.titleLabel?.text == correctAnswer
+        if answerArray == 4 {
+        
+        if sender === option1 && option1.titleLabel?.text == correctAnswer || sender === option2 && option2.titleLabel?.text == correctAnswer || sender === option3 && option3.titleLabel?.text == correctAnswer || sender === option4 && option4.titleLabel?.text == correctAnswer
             {
                 correctQuestions += 1
                 questionField.text = "That's Correct!"
                 questionField.textColor = UIColor.green
+                playCorrectResponseSound()
                 
             }
             else
@@ -109,8 +132,32 @@ class ViewController: UIViewController {
                 answerField.font = UIFont(name: "Thonburi", size: 15)
                 answerField.text = "It's \(correctAnswer)!"
                 answerField.textColor = UIColor.orange
+                playWrongResponseSound()
                 
             }
+            
+        } else if answerArray == 3 {
+            
+            if sender === option1 && option1.titleLabel?.text == correctAnswer || sender === option2 && option2.titleLabel?.text == correctAnswer || sender === option3 && option3.titleLabel?.text == correctAnswer
+            {
+                correctQuestions += 1
+                questionField.text = "That's Correct!"
+                questionField.textColor = UIColor.green
+                playCorrectResponseSound()
+            }
+            else
+            {
+                answerField.isHidden = false
+                questionField.text = "Sorry, that's wrong!"
+                questionField.textColor = UIColor.orange
+                answerField.font = UIFont(name: "Thonburi", size: 15)
+                answerField.text = "It's \(correctAnswer)!"
+                answerField.textColor = UIColor.orange
+                playWrongResponseSound()
+                
+            }
+            
+        }
         // End timer
         timer.invalidate()
         
@@ -159,14 +206,39 @@ class ViewController: UIViewController {
         
     }
     
+    // MARK: Sound Methods
+    
     func loadGameStartSound() {
-        let pathToSoundFile = Bundle.main.path(forResource: "GameSound", ofType: "wav")
-        let soundURL = URL(fileURLWithPath: pathToSoundFile!)
+        if let pathToSoundFile = Bundle.main.path(forResource: "GameSound", ofType: "wav") {
+            let soundURL = URL(fileURLWithPath: pathToSoundFile)
         AudioServicesCreateSystemSoundID(soundURL as CFURL, &gameSound)
+        }
+    }
+    
+    func loadCorrectResponseSound() {
+        if let pathToSoundFile = Bundle.main.path(forResource: "CorrectAnswer", ofType: "wav") {
+            let soundURL = URL(fileURLWithPath: pathToSoundFile)
+        AudioServicesCreateSystemSoundID(soundURL as CFURL, &correctSound)
+        }
+    }
+    
+    func loadWrongResponseSound() {
+        if let pathToSoundFile = Bundle.main.path(forResource: "wrongAnswer", ofType: "wav") {
+            let soundURL = URL(fileURLWithPath: pathToSoundFile)
+        AudioServicesCreateSystemSoundID(soundURL as CFURL, &incorrectSound)
+        }
     }
     
     func playGameStartSound() {
         AudioServicesPlaySystemSound(gameSound)
+    }
+    
+    func playCorrectResponseSound() {
+        AudioServicesPlaySystemSound(correctSound)
+    }
+    
+    func playWrongResponseSound() {
+        AudioServicesPlaySystemSound(incorrectSound)
     }
     
     // MARK: Timer Methods
@@ -176,6 +248,7 @@ class ViewController: UIViewController {
             var timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(setProgressBar), userInfo: nil, repeats: true)
         
     }
+    
     
     func setProgressBar() {
         if indexProgressBar < timeDuration {

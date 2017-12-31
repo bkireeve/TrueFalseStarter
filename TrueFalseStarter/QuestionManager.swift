@@ -31,7 +31,11 @@ struct QuestionManager {
         Questions(question: "Which of the following rivers is longest?", questionOptions: ["Yangtze", "Mississippi", "Congo", "Mekong"], answer: "Mississippi"),
         Questions(question: "Which city is the oldest?", questionOptions: ["Mexico City", "Cape Town", "San Juan", "Sydney"], answer: "Mexico City"),
         Questions(question: "Which country was the first to allow women to vote at national elections?", questionOptions: ["Poland", "United States", "Sweden", "Senegal"], answer: "Poland"),
-        Questions(question: "Which of these countries won the most medals in the 2012 Summer Games?", questionOptions: ["France", "Germany", "Japan", "Great Britain"], answer: "Great Britain")
+        Questions(question: "Which of these countries won the most medals in the 2012 Summer Games?", questionOptions: ["France", "Germany", "Japan", "Great Britain"], answer: "Great Britain"),
+        Questions(question: "Entomology is the science that studies", questionOptions: ["Behaviour of humans", "Insects", "The formation of rocks"], answer: "Insects"),
+        Questions(question: "Epsom, England is the place associated with what?", questionOptions: ["Horse Racing", "Polo", "Shooting"], answer: "Horse Racing"),
+        Questions(question: "When did the first human heart transplant occur?", questionOptions: ["1967", "1968", "1958"], answer: "1967"),
+        Questions(question: "Galileo was an Italian astronomer who did what?", questionOptions: ["Developed the telescope", "Painted the Sistine Chapel", "Started democracy"], answer: "Developed the telescope")
     ]
     
     
@@ -51,10 +55,10 @@ struct QuestionManager {
         return uniqueQuestion
     }
     
-    func getCorrectAnswer(in index: Int) -> String {
-        let answerArray = quizQuestions[index]
-        return answerArray.answer
-    }
+   
+    
+    
+    
     
 }
 
