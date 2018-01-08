@@ -25,7 +25,7 @@ class ViewController: UIViewController {
     
     // Questions and answers
     var questionManager = QuestionManager()
-    var questions: Questions = Questions(question: "", questionOptions: [""], answer: "")
+    var questions: Question = Question(question: "", questionOptions: [""], answer: "")
     
     // Timer
     var timer = Timer()
@@ -45,8 +45,6 @@ class ViewController: UIViewController {
     @IBOutlet weak var timerProgressBar: UIProgressView!
     // Top Constraint outlets for option buttons
     
-    @IBOutlet var constraintTopOption4: NSLayoutConstraint!
-    @IBOutlet var constraintHeightOption4: NSLayoutConstraint!
     
     
     override func viewDidLoad() {
@@ -88,16 +86,14 @@ class ViewController: UIViewController {
             option3.setTitle(questions.questionOptions[2], for: .normal)
             option4.setTitle(questions.questionOptions[3], for: .normal)
             option4.isHidden = false
-            constraintTopOption4.constant = 20
-            constraintHeightOption4.constant = 50
+            
         }
         else if answerArray == 3 {
             option1.setTitle(questions.questionOptions[0], for: .normal)
             option2.setTitle(questions.questionOptions[1], for: .normal)
             option3.setTitle(questions.questionOptions[2], for: .normal)
             option4.isHidden = true
-            constraintTopOption4.constant = 0
-            constraintHeightOption4.constant = 0
+            
         }
     }
     
